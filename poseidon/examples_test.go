@@ -8,7 +8,7 @@ import (
 	"github.com/aaronellington/poseidon/poseidon"
 )
 
-func ExampleMain() {
+func ExampleNew() {
 	service, err := poseidon.New(
 		os.DirFS("."),
 		poseidon.WithCachePolicy(),

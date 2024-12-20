@@ -50,14 +50,15 @@ build-go:
 watch:
 
 docker-build:
-	docker build --pull --rm --platform linux/amd64,linux/arm64 -t ghcr.io/aaronellington/poseidon:latest "."
+	docker build --pull --rm --platform linux/amd64,linux/arm64 -t local/poseidon:latest "."
 
 docker-test: docker-build
-	docker run -p 3000:3000/tcp -v ./poseidon/test_data/:/var/www/html/ poseidon:latest
+	docker run -p 3000:3000/tcp -v ./poseidon/test_data/:/var/www/html/ local/poseidon:latest
 
 docker-publish: docker-build
+	docker tag local/poseidon:latest ghcr.io/aaronellington/poseidon:latest
 	docker push ghcr.io/aaronellington/poseidon:latest
-	docker tag ghcr.io/aaronellington/poseidon:latest aaronellington/poseidon:latest
+	docker tag local/poseidon:latest aaronellington/poseidon:latest
 	docker push aaronellington/poseidon:latest
 
 ## Run the docs server for the project

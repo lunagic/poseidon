@@ -77,6 +77,24 @@ func TestCachePolicyNext(t *testing.T) {
 	})
 }
 
+func TestCachePolicyNotFound(t *testing.T) {
+	testService(t, TestCase{
+		Request: httptest.NewRequest(
+			http.MethodGet, "/_next/not-found.css",
+			nil,
+		),
+		ExpectedStatusCode: http.StatusNotFound,
+		ExpectedBody:       "404 page not found\n",
+		ExpectedHeaders: map[string]string{
+			"content-typE":  "text/plain; charset=utf-8",
+			"Cache-Control": "no-store, no-cache, must-revalidate",
+		},
+		ConfigFuncs: []poseidon.ConfigFunc{
+			poseidon.WithCachePolicy(),
+		},
+	})
+}
+
 func TestCustomNotFoundFile(t *testing.T) {
 	testService(t, TestCase{
 		Request: httptest.NewRequest(
@@ -101,6 +119,9 @@ func TestSPANotFound(t *testing.T) {
 		ExpectedBody:       "Hello there.\n",
 		ConfigFuncs: []poseidon.ConfigFunc{
 			poseidon.WithSPA(),
+		},
+		ExpectedHeaders: map[string]string{
+			"Cache-Control": "no-store, no-cache, must-revalidate",
 		},
 	})
 }

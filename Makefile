@@ -58,8 +58,6 @@ docker-test: docker-build
 docker-publish: docker-build
 	docker tag local/poseidon:latest ghcr.io/aaronellington/poseidon:latest
 	docker push ghcr.io/aaronellington/poseidon:latest
-	docker tag local/poseidon:latest aaronellington/poseidon:latest
-	docker push aaronellington/poseidon:latest
 
 ## Run the docs server for the project
 docs-go:

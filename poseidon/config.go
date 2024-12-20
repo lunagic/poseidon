@@ -2,7 +2,10 @@ package poseidon
 
 import (
 	"io"
+	"io/fs"
+	"mime"
 	"net/http"
+	"path/filepath"
 	"strings"
 )
 
@@ -28,16 +31,14 @@ func WithCachePolicy() ConfigFunc {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			for _, checker := range checkers {
 				if checker(r.URL.Path) {
-					w.Header().Set("Cache-Control", "public,max-age=31536000,immutable")
+					cacheForever(w)
 					next.ServeHTTP(w, r)
 					return
 				}
 			}
 
 			// Don't cache anything by default
-			w.Header().Set("Cache-Control", "no-store, no-cache, must-revalidate")
-			w.Header().Set("Pragma", "no-cache")
-			w.Header().Set("Expires", "0")
+			doNotCache(w)
 			next.ServeHTTP(w, r)
 		})
 	})
@@ -65,12 +66,15 @@ func WithCustomNotFoundFile(filePath string) ConfigFunc {
 			// Open the custom not found file
 			file, err := service.fileSystem.Open(filePath)
 			if err != nil {
+				doNotCache(w)
 				http.NotFound(w, r)
 				return
 			}
 
+			doNotCache(w)
 			w.WriteHeader(http.StatusNotFound)
-			io.Copy(w, file)
+			writeFile(w, file)
+
 			file.Close()
 		}))(service)
 	})
@@ -92,4 +96,24 @@ func WithSPA() ConfigFunc {
 
 		return nil
 	}
+}
+
+func doNotCache(w http.ResponseWriter) {
+	w.Header().Set("Cache-Control", "no-store, no-cache, must-revalidate")
+	w.Header().Set("Pragma", "no-cache")
+	w.Header().Set("Expires", "0")
+}
+
+func cacheForever(w http.ResponseWriter) {
+	w.Header().Set("Cache-Control", "public,max-age=31536000,immutable")
+	w.Header().Del("Pragma")
+	w.Header().Del("Expires")
+}
+
+func writeFile(w http.ResponseWriter, file fs.File) {
+	stat, _ := file.Stat()
+	w.Header().Set("content-type", mime.TypeByExtension(filepath.Ext(stat.Name())))
+
+	io.Copy(w, file)
+	file.Close()
 }

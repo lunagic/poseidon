@@ -1,11 +1,8 @@
 package poseidon
 
 import (
-	"io"
 	"io/fs"
-	"mime"
 	"net/http"
-	"path/filepath"
 	"slices"
 	"strings"
 )
@@ -42,6 +39,18 @@ type Service struct {
 }
 
 func (service *Service) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+	var handler http.Handler = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		service.internalServeHTTP(w, r)
+	})
+
+	for _, middleware := range service.middlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+func (service *Service) internalServeHTTP(w http.ResponseWriter, r *http.Request) {
 	path := r.URL.Path
 	path = strings.TrimPrefix(path, "/")
 	if strings.HasSuffix(path, "/") || path == "" {
@@ -50,6 +59,7 @@ func (service *Service) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 	file, err := service.fileSystem.Open(path)
 	if err != nil {
+		doNotCache(w)
 		service.notFoundHandler.ServeHTTP(w, r)
 		return
 	}
@@ -64,20 +74,9 @@ func (service *Service) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	}
 
 	var handler http.Handler = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		// Set Header
-		w.Header().Set("content-type", mime.TypeByExtension(filepath.Ext(path)))
-
 		w.WriteHeader(http.StatusOK)
-		if _, err := io.Copy(w, file); err != nil {
-			panic(err)
-		}
-
-		file.Close()
+		writeFile(w, file)
 	})
-
-	for _, middleware := range service.middlewares {
-		handler = middleware(handler)
-	}
 
 	handler.ServeHTTP(w, r)
 }

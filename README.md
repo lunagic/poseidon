@@ -48,7 +48,7 @@ COPY --from=builder /workspace/out .
 
 ## Library Example
 
-https://pkg.go.dev/github.com/aaronellington/poseidon
+https://pkg.go.dev/github.com/aaronellington/poseidon/poseidon
 
 ```shell
 go get github.com/aaronellington/poseidon@latest

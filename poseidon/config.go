@@ -1,6 +1,7 @@
 package poseidon
 
 import (
+	"compress/gzip"
 	"io"
 	"io/fs"
 	"mime"
@@ -10,6 +11,34 @@ import (
 )
 
 type ConfigFunc func(service *Service) error
+
+type gzipResponseWriter struct {
+	io.Writer
+	http.ResponseWriter
+}
+
+func (w gzipResponseWriter) Write(b []byte) (int, error) {
+	return w.Writer.Write(b)
+}
+
+func WithGZipCompression() ConfigFunc {
+	return WithMiddleware(func(next http.Handler) http.Handler {
+		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			// Skip if browser does not support gzip
+			if !strings.Contains(r.Header.Get("Accept-Encoding"), "gzip") {
+				next.ServeHTTP(w, r)
+				return
+			}
+
+			w.Header().Set("Content-Encoding", "gzip")
+			gzipWriter := gzip.NewWriter(w)
+			defer gzipWriter.Close()
+			gzipResponseWriter := gzipResponseWriter{Writer: gzipWriter, ResponseWriter: w}
+
+			next.ServeHTTP(gzipResponseWriter, r)
+		})
+	})
+}
 
 func WithMiddleware(middleware Middleware) ConfigFunc {
 	return func(service *Service) error {

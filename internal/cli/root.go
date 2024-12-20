@@ -19,6 +19,7 @@ type Config struct {
 	Index        string `env:"POSEIDON_INDEX"`
 	NotFoundFile string `env:"POSEIDON_NOT_FOUND_FILE"`
 	CachePolicy  bool   `env:"POSEIDON_CACHE_POLICY"`
+	GZIP         bool   `env:"POSEIDON_GZIP"`
 }
 
 func (config *Config) ListenAddress() string {
@@ -57,6 +58,13 @@ func (config *Config) AddFlags(cmd *cobra.Command) {
 	)
 
 	cmd.Flags().BoolVar(
+		&config.GZIP,
+		"gzip",
+		config.GZIP,
+		"enables gzip compression",
+	)
+
+	cmd.Flags().BoolVar(
 		&config.CachePolicy,
 		"cache-policy",
 		config.CachePolicy,
@@ -86,6 +94,7 @@ func Cmd() *cobra.Command {
 		NotFoundFile: "404.html",
 		Index:        "index.html",
 		Root:         ".",
+		GZIP:         true,
 		CachePolicy:  true,
 	}
 	if err := environment.New().Decode(config); err != nil {
@@ -113,6 +122,10 @@ func Cmd() *cobra.Command {
 
 			if config.SPAMode {
 				configFuncs = append(configFuncs, poseidon.WithSPA())
+			}
+
+			if config.GZIP {
+				configFuncs = append(configFuncs, poseidon.WithGZipCompression())
 			}
 
 			service, err := poseidon.New(fileSystem, configFuncs...)

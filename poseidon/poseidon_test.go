@@ -1,6 +1,7 @@
 package poseidon_test
 
 import (
+	"compress/gzip"
 	"io"
 	"net/http"
 	"net/http/httptest"
@@ -55,6 +56,30 @@ func TestCachePolicyIndex(t *testing.T) {
 		},
 		ConfigFuncs: []poseidon.ConfigFunc{
 			poseidon.WithCachePolicy(),
+		},
+	})
+}
+
+func TestWithGZipCompression(t *testing.T) {
+	testService(t, TestCase{
+		Request: func() *http.Request {
+			r := httptest.NewRequest(
+				http.MethodGet, "/",
+				nil,
+			)
+
+			r.Header.Set("accept-encoding", "gzip, deflate, br, zstd")
+
+			return r
+		}(),
+		ExpectedStatusCode: http.StatusOK,
+		ExpectedBody:       "Hello there.\n",
+		ExpectedHeaders: map[string]string{
+			"content-typE":     "text/html; charset=utf-8",
+			"Content-Encoding": "gzip",
+		},
+		ConfigFuncs: []poseidon.ConfigFunc{
+			poseidon.WithGZipCompression(),
 		},
 	})
 }
@@ -210,7 +235,17 @@ func testService(t *testing.T, testCase TestCase) {
 		t.Fatalf("Unexpected Status Code, Got: %d, Expected: %d", recorder.Code, testCase.ExpectedStatusCode)
 	}
 
-	body, err := io.ReadAll(recorder.Body)
+	var reader io.ReadCloser = recorder.Result().Body
+
+	switch recorder.Header().Get("Content-Encoding") {
+	case "gzip":
+		reader, err = gzip.NewReader(recorder.Body)
+		if err != nil {
+			t.Fatal(err)
+		}
+	}
+
+	body, err := io.ReadAll(reader)
 	if err != nil {
 		t.Fatal(err)
 	}

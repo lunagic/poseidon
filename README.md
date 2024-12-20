@@ -24,6 +24,7 @@ poseidon --help
 | `--index`          | `"index.html"` | `POSEIDON_INDEX`          | the default file to be served in a directory         |
 | `--not-found-file` | `"404.html"`   | `POSEIDON_NOT_FOUND_FILE` | the file that gets served in a "not found" situation |
 | `--cache-policy`   | `true`         | `POSEIDON_CACHE_POLICY`   | enables caching headers to be set                    |
+| `--gzip`           | `true`         | `POSEIDON_GZIP`           | enables gzip compression                             |
 | `--spa`            | `false`        | `POSEIDON_SPA_MODE`       | serves the index in a "not found" situation          |
 
 ## Command Line Example

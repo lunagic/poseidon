@@ -8,7 +8,7 @@ import (
 	"os"
 	"testing"
 
-	"github.com/aaronellington/poseidon/poseidon"
+	"github.com/lunagic/poseidon/poseidon"
 )
 
 type TestCase struct {

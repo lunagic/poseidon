@@ -6,7 +6,7 @@ import (
 	"net/http"
 	"os"
 
-	"github.com/aaronellington/poseidon/poseidon"
+	"github.com/lunagic/poseidon/poseidon"
 	"github.com/lunagic/environment-go/environment"
 	"github.com/spf13/cobra"
 )

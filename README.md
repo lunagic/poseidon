@@ -5,7 +5,7 @@ Static File Server
 ## Installation
 
 ```shell
-go install github.com/aaronellington/poseidon@latest
+go install github.com/lunagic/poseidon@latest
 ```
 
 ## Command Line Usage
@@ -42,17 +42,17 @@ COPY . .
 RUN npm install
 RUN npm run build
 
-FROM ghcr.io/aaronellington/poseidon:latest
+FROM ghcr.io/lunagic/poseidon:latest
 ENV POSEIDON_NOT_FOUND_FILE=404/index.html
 COPY --from=builder /workspace/out .
 ```
 
 ## Library Example
 
-https://pkg.go.dev/github.com/aaronellington/poseidon/poseidon
+https://pkg.go.dev/github.com/lunagic/poseidon/poseidon
 
 ```shell
-go get github.com/aaronellington/poseidon@latest
+go get github.com/lunagic/poseidon@latest
 ```
 
 ```go
@@ -63,7 +63,7 @@ import (
 	"net/http"
 	"os"
 
-	"github.com/aaronellington/poseidon/poseidon"
+	"github.com/lunagic/poseidon/poseidon"
 )
 
 func main() {

@@ -57,8 +57,8 @@ docker-test: docker-build
 	docker run -p 3000:3000/tcp -v ./poseidon/test_data/:/var/www/html/ local/poseidon:latest
 
 docker-publish: docker-build
-	docker tag local/poseidon:latest ghcr.io/aaronellington/poseidon:latest
-	docker push ghcr.io/aaronellington/poseidon:latest
+	docker tag local/poseidon:latest ghcr.io/lunagic/poseidon:latest
+	docker push ghcr.io/lunagic/poseidon:latest
 
 ## Run the docs server for the project
 docs-go:

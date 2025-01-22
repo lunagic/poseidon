@@ -4,7 +4,7 @@ import (
 	"context"
 	"os"
 
-	"github.com/aaronellington/poseidon/internal/cli"
+	"github.com/lunagic/poseidon/internal/cli"
 )
 
 func main() {

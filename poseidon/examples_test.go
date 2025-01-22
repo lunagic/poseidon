@@ -5,7 +5,7 @@ import (
 	"net/http"
 	"os"
 
-	"github.com/aaronellington/poseidon/poseidon"
+	"github.com/lunagic/poseidon/poseidon"
 )
 
 func ExampleNew() {

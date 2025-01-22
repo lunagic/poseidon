@@ -1,4 +1,4 @@
-module github.com/aaronellington/poseidon
+module github.com/lunagic/poseidon
 
 go 1.23.1
 

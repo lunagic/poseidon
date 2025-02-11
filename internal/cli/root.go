@@ -5,9 +5,10 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"strings"
 
-	"github.com/lunagic/poseidon/poseidon"
 	"github.com/lunagic/environment-go/environment"
+	"github.com/lunagic/poseidon/poseidon"
 	"github.com/spf13/cobra"
 )
 
@@ -109,7 +110,16 @@ func Cmd() *cobra.Command {
 			configFuncs := []poseidon.ConfigFunc{}
 
 			if config.CachePolicy {
-				configFuncs = append(configFuncs, poseidon.WithCachePolicy())
+				configFuncs = append(configFuncs, poseidon.WithCachePolicy(
+					// Generic Generated Assets
+					func(path string) bool {
+						return strings.HasPrefix(path, "/_assets/")
+					},
+					// Next.js
+					func(path string) bool {
+						return strings.HasPrefix(path, "/_next/")
+					},
+				))
 			}
 
 			if config.Index != "" {

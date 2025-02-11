@@ -4,6 +4,7 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"strings"
 
 	"github.com/lunagic/poseidon/poseidon"
 )
@@ -11,7 +12,11 @@ import (
 func ExampleNew() {
 	service, err := poseidon.New(
 		os.DirFS("."),
-		poseidon.WithCachePolicy(),
+		poseidon.WithCachePolicy(
+			func(path string) bool {
+				return strings.HasPrefix(path, "/_next/")
+			},
+		),
 		poseidon.WithCustomNotFoundFile("404/index.html"),
 	)
 	if err != nil {

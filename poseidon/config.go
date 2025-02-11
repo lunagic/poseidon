@@ -48,14 +48,7 @@ func WithMiddleware(middleware Middleware) ConfigFunc {
 	}
 }
 
-func WithCachePolicy() ConfigFunc {
-	checkers := []func(path string) bool{
-		// Next.js
-		func(path string) bool {
-			return strings.HasPrefix(path, "/_next/")
-		},
-	}
-
+func WithCachePolicy(checkers ...func(string) bool) ConfigFunc {
 	return WithMiddleware(func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			for _, checker := range checkers {

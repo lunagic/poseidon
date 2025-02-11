@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"os"
+	"strings"
 	"testing"
 
 	"github.com/lunagic/poseidon/poseidon"
@@ -55,7 +56,11 @@ func TestCachePolicyIndex(t *testing.T) {
 			"Cache-Control": "no-store, no-cache, must-revalidate",
 		},
 		ConfigFuncs: []poseidon.ConfigFunc{
-			poseidon.WithCachePolicy(),
+			poseidon.WithCachePolicy(
+				func(path string) bool {
+					return strings.HasPrefix(path, "/_next/")
+				},
+			),
 		},
 	})
 }
@@ -97,7 +102,11 @@ func TestCachePolicyNext(t *testing.T) {
 			"Cache-Control": "public,max-age=31536000,immutable",
 		},
 		ConfigFuncs: []poseidon.ConfigFunc{
-			poseidon.WithCachePolicy(),
+			poseidon.WithCachePolicy(
+				func(path string) bool {
+					return strings.HasPrefix(path, "/_next/")
+				},
+			),
 		},
 	})
 }
@@ -115,7 +124,11 @@ func TestCachePolicyNotFound(t *testing.T) {
 			"Cache-Control": "no-store, no-cache, must-revalidate",
 		},
 		ConfigFuncs: []poseidon.ConfigFunc{
-			poseidon.WithCachePolicy(),
+			poseidon.WithCachePolicy(
+				func(path string) bool {
+					return strings.HasPrefix(path, "/_next/")
+				},
+			),
 		},
 	})
 }

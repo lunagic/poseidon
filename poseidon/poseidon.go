@@ -74,8 +74,7 @@ func (service *Service) internalServeHTTP(w http.ResponseWriter, r *http.Request
 	}
 
 	var handler http.Handler = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		w.WriteHeader(http.StatusOK)
-		writeFile(w, file)
+		writeFile(w, file, http.StatusOK)
 	})
 
 	handler.ServeHTTP(w, r)

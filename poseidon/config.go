@@ -94,8 +94,7 @@ func WithCustomNotFoundFile(filePath string) ConfigFunc {
 			}
 
 			doNotCache(w)
-			w.WriteHeader(http.StatusNotFound)
-			writeFile(w, file)
+			writeFile(w, file, http.StatusNotFound)
 
 			file.Close()
 		}))(service)
@@ -132,10 +131,10 @@ func cacheForever(w http.ResponseWriter) {
 	w.Header().Del("Expires")
 }
 
-func writeFile(w http.ResponseWriter, file fs.File) {
+func writeFile(w http.ResponseWriter, file fs.File, status int) {
 	stat, _ := file.Stat()
 	w.Header().Set("content-type", mime.TypeByExtension(filepath.Ext(stat.Name())))
-
+	w.WriteHeader(status)
 	io.Copy(w, file)
 	file.Close()
 }

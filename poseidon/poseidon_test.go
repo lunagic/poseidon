@@ -53,7 +53,7 @@ func TestCachePolicyIndex(t *testing.T) {
 		ExpectedBody:       "Hello there.\n",
 		ExpectedHeaders: map[string]string{
 			"content-typE":  "text/html; charset=utf-8",
-			"Cache-Control": "no-store, no-cache, must-revalidate",
+			"Cache-Control": "no-cache, must-revalidate",
 		},
 		ConfigFuncs: []poseidon.ConfigFunc{
 			poseidon.WithCachePolicy(
@@ -121,7 +121,7 @@ func TestCachePolicyNotFound(t *testing.T) {
 		ExpectedBody:       "404 page not found\n",
 		ExpectedHeaders: map[string]string{
 			"content-typE":  "text/plain; charset=utf-8",
-			"Cache-Control": "no-store, no-cache, must-revalidate",
+			"Cache-Control": "no-cache, must-revalidate",
 		},
 		ConfigFuncs: []poseidon.ConfigFunc{
 			poseidon.WithCachePolicy(
@@ -159,7 +159,7 @@ func TestSPANotFound(t *testing.T) {
 			poseidon.WithSPA(),
 		},
 		ExpectedHeaders: map[string]string{
-			"Cache-Control": "no-store, no-cache, must-revalidate",
+			"Cache-Control": "no-cache, must-revalidate",
 		},
 	})
 }

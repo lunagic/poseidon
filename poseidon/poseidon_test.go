@@ -210,18 +210,28 @@ func TestFolderIndexWithoutTrailingSlash(t *testing.T) {
 			http.MethodGet, "/folder",
 			nil,
 		),
-		ExpectedStatusCode: 200,
-		ExpectedBody:       "This is in a folder.\n",
-		ExpectedHeaders: map[string]string{
-			"content-type": "text/html; charset=utf-8",
+		ExpectedStatusCode: http.StatusTemporaryRedirect,
+		ExpectedBody:       "<a href=\"/folder/\">Temporary Redirect</a>",
+	})
+}
+func TestFolderIndexWithoutTrailingSlashAndGZip(t *testing.T) {
+	testService(t, TestCase{
+		Request: httptest.NewRequest(
+			http.MethodGet, "/folder",
+			nil,
+		),
+		ConfigFuncs: []poseidon.ConfigFunc{
+			poseidon.WithGZipCompression(),
 		},
+		ExpectedStatusCode: http.StatusTemporaryRedirect,
+		ExpectedBody:       "<a href=\"/folder/\">Temporary Redirect</a>",
 	})
 }
 
 func TestFolderIndexWithTrailingSlash(t *testing.T) {
 	testService(t, TestCase{
 		Request: httptest.NewRequest(
-			http.MethodGet, "/folder",
+			http.MethodGet, "/folder/",
 			nil,
 		),
 		ExpectedStatusCode: 200,

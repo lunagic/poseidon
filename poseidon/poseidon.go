@@ -67,9 +67,9 @@ func (service *Service) internalServeHTTP(w http.ResponseWriter, r *http.Request
 	// If directory, add trailing slash and retry
 	if info, err := file.Stat(); err != nil {
 		panic(err)
-	} else if info.IsDir() {
-		r.URL.Path += "/"
-		service.ServeHTTP(w, r)
+	} else if info.IsDir() && !strings.HasSuffix(r.URL.Path, "/") {
+		doNotCache(w)
+		http.Redirect(w, r, r.URL.Path+"/", http.StatusTemporaryRedirect)
 		return
 	}
 

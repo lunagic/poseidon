@@ -211,7 +211,7 @@ func TestFolderIndexWithoutTrailingSlash(t *testing.T) {
 			nil,
 		),
 		ExpectedStatusCode: http.StatusTemporaryRedirect,
-		ExpectedBody:       "<a href=\"/folder/\">Temporary Redirect</a>",
+		ExpectedBody:       "<a href=\"/folder/\">Temporary Redirect</a>.\n\n",
 	})
 }
 func TestFolderIndexWithoutTrailingSlashAndGZip(t *testing.T) {
@@ -224,7 +224,7 @@ func TestFolderIndexWithoutTrailingSlashAndGZip(t *testing.T) {
 			poseidon.WithGZipCompression(),
 		},
 		ExpectedStatusCode: http.StatusTemporaryRedirect,
-		ExpectedBody:       "<a href=\"/folder/\">Temporary Redirect</a>",
+		ExpectedBody:       "<a href=\"/folder/\">Temporary Redirect</a>.\n\n",
 	})
 }
 

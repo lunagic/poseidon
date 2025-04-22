@@ -76,7 +76,14 @@ func WithCustomIndex(index string) ConfigFunc {
 
 func WithCustomNotFoundHandler(handler http.Handler) ConfigFunc {
 	return func(service *Service) error {
-		service.notFoundHandler = handler
+		service.notFoundHandler = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			if !strings.Contains(r.Header.Get("accept"), "text/html") {
+				http.NotFound(w, r)
+				return
+			}
+
+			handler.ServeHTTP(w, r)
+		})
 
 		return nil
 	}
@@ -92,30 +99,27 @@ func WithCustomNotFoundFile(filePath string) ConfigFunc {
 				http.NotFound(w, r)
 				return
 			}
+			defer file.Close()
 
 			doNotCache(w)
 			writeFile(w, file, http.StatusNotFound)
-
-			file.Close()
 		}))(service)
 	})
 }
 
-func WithSPA() ConfigFunc {
+func WithClientSideRouting() ConfigFunc {
 	return func(service *Service) error {
-		service.notFoundHandler = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		return WithCustomNotFoundHandler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			// Prevent infinite recursion
 			if r.URL.Path == service.index {
-				http.NotFoundHandler().ServeHTTP(w, r)
+				http.NotFound(w, r)
 				return
 			}
 
 			// Change the path to the index and retry
 			r.URL.Path = service.index
 			service.ServeHTTP(w, r)
-		})
-
-		return nil
+		}))(service)
 	}
 }
 

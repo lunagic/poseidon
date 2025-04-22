@@ -13,14 +13,14 @@ import (
 )
 
 type Config struct {
-	Host         string `env:"HOST"`
-	Port         int    `env:"PORT"`
-	Root         string `env:"POSEIDON_ROOT"`
-	SPAMode      bool   `env:"POSEIDON_SPA_MODE"`
-	Index        string `env:"POSEIDON_INDEX"`
-	NotFoundFile string `env:"POSEIDON_NOT_FOUND_FILE"`
-	CachePolicy  bool   `env:"POSEIDON_CACHE_POLICY"`
-	GZIP         bool   `env:"POSEIDON_GZIP"`
+	Host              string `env:"HOST"`
+	Port              int    `env:"PORT"`
+	Root              string `env:"POSEIDON_ROOT"`
+	ClientSideRouting bool   `env:"POSEIDON_CLIENT_SIDE_ROUTING"`
+	Index             string `env:"POSEIDON_INDEX"`
+	NotFoundFile      string `env:"POSEIDON_NOT_FOUND_FILE"`
+	CachePolicy       bool   `env:"POSEIDON_CACHE_POLICY"`
+	GZIP              bool   `env:"POSEIDON_GZIP"`
 }
 
 func (config *Config) ListenAddress() string {
@@ -52,10 +52,10 @@ func (config *Config) AddFlags(cmd *cobra.Command) {
 	)
 
 	cmd.Flags().BoolVar(
-		&config.SPAMode,
-		"spa",
-		config.SPAMode,
-		"enables SPA mode (serve index on 404)",
+		&config.ClientSideRouting,
+		"csr",
+		config.ClientSideRouting,
+		"enables Client Side Routing (serves the index in a \"not found\" situation)",
 	)
 
 	cmd.Flags().BoolVar(
@@ -130,8 +130,8 @@ func Cmd() *cobra.Command {
 				configFuncs = append(configFuncs, poseidon.WithCustomNotFoundFile(config.NotFoundFile))
 			}
 
-			if config.SPAMode {
-				configFuncs = append(configFuncs, poseidon.WithSPA())
+			if config.ClientSideRouting {
+				configFuncs = append(configFuncs, poseidon.WithClientSideRouting())
 			}
 
 			if config.GZIP {

@@ -3,7 +3,6 @@ package poseidon
 import (
 	"io/fs"
 	"net/http"
-	"slices"
 	"strings"
 )
 
@@ -15,7 +14,7 @@ func New(
 		fileSystem:      fileSystem,
 		index:           "index.html",
 		notFoundHandler: http.NotFoundHandler(),
-		middlewares:     []Middleware{},
+		middlewares:     Middlewares{},
 	}
 
 	for _, configFunc := range configFuncs {
@@ -24,30 +23,23 @@ func New(
 		}
 	}
 
-	slices.Reverse(service.middlewares)
+	service.handler = service.middlewares.Apply(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		service.internalServeHTTP(w, r)
+	}))
 
 	return service, nil
 }
-
-type Middleware func(next http.Handler) http.Handler
 
 type Service struct {
 	fileSystem      fs.FS
 	index           string
 	notFoundHandler http.Handler
-	middlewares     []Middleware
+	middlewares     Middlewares
+	handler         http.Handler
 }
 
 func (service *Service) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	var handler http.Handler = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		service.internalServeHTTP(w, r)
-	})
-
-	for _, middleware := range service.middlewares {
-		handler = middleware(handler)
-	}
-
-	handler.ServeHTTP(w, r)
+	service.handler.ServeHTTP(w, r)
 }
 
 func (service *Service) internalServeHTTP(w http.ResponseWriter, r *http.Request) {

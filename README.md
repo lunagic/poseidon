@@ -16,16 +16,16 @@ poseidon --help
 
 ## Configuration
 
-| Flag               | Default        | Env Var                   | Description                                          |
-| ------------------ | -------------- | ------------------------- | ---------------------------------------------------- |
-| `--host`           | `"127.0.0.1"`  | `HOST`                    | the host to run on                                   |
-| `--port`           | `3000`         | `PORT`                    | the port to run on                                   |
-| `--root`           | `"."`          | `POSEIDON_ROOT`           | the root directory to serve files from               |
-| `--index`          | `"index.html"` | `POSEIDON_INDEX`          | the default file to be served in a directory         |
-| `--not-found-file` | `"404.html"`   | `POSEIDON_NOT_FOUND_FILE` | the file that gets served in a "not found" situation |
-| `--cache-policy`   | `true`         | `POSEIDON_CACHE_POLICY`   | enables caching headers to be set                    |
-| `--gzip`           | `true`         | `POSEIDON_GZIP`           | enables gzip compression                             |
-| `--spa`            | `false`        | `POSEIDON_SPA_MODE`       | serves the index in a "not found" situation          |
+| Flag               | Default        | Env Var                        | Description                                          |
+| ------------------ | -------------- | ------------------------------ | ---------------------------------------------------- |
+| `--host`           | `"127.0.0.1"`  | `HOST`                         | the host to run on                                   |
+| `--port`           | `3000`         | `PORT`                         | the port to run on                                   |
+| `--root`           | `"."`          | `POSEIDON_ROOT`                | the root directory to serve files from               |
+| `--index`          | `"index.html"` | `POSEIDON_INDEX`               | the default file to be served in a directory         |
+| `--not-found-file` | `"404.html"`   | `POSEIDON_NOT_FOUND_FILE`      | the file that gets served in a "not found" situation |
+| `--cache-policy`   | `true`         | `POSEIDON_CACHE_POLICY`        | enables caching headers to be set                    |
+| `--gzip`           | `true`         | `POSEIDON_GZIP`                | enables gzip compression                             |
+| `--csr`            | `false`        | `POSEIDON_CLIENT_SIDE_ROUTING` | serves the index in a "not found" situation          |
 
 ## Command Line Example
 

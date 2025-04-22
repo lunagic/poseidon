@@ -16,6 +16,7 @@ type TestCase struct {
 	Request            *http.Request
 	ExpectedStatusCode int
 	ExpectedHeaders    map[string]string
+	RequestHeaders     map[string]string
 	ExpectedBody       string
 	ConfigFuncs        []poseidon.ConfigFunc
 }
@@ -139,6 +140,9 @@ func TestCustomNotFoundFile(t *testing.T) {
 			http.MethodGet, "/foobar",
 			nil,
 		),
+		RequestHeaders: map[string]string{
+			"accept": "text/html",
+		},
 		ExpectedStatusCode: http.StatusNotFound,
 		ExpectedBody:       "custom not found\n",
 		ConfigFuncs: []poseidon.ConfigFunc{
@@ -147,16 +151,19 @@ func TestCustomNotFoundFile(t *testing.T) {
 	})
 }
 
-func TestSPANotFound(t *testing.T) {
+func TestClientSideRoutingNotFound(t *testing.T) {
 	testService(t, TestCase{
 		Request: httptest.NewRequest(
 			http.MethodGet, "/foobar",
 			nil,
 		),
+		RequestHeaders: map[string]string{
+			"accept": "text/html",
+		},
 		ExpectedStatusCode: 200,
 		ExpectedBody:       "Hello there.\n",
 		ConfigFuncs: []poseidon.ConfigFunc{
-			poseidon.WithSPA(),
+			poseidon.WithClientSideRouting(),
 		},
 		ExpectedHeaders: map[string]string{
 			"Cache-Control": "no-cache, must-revalidate",
@@ -164,7 +171,24 @@ func TestSPANotFound(t *testing.T) {
 	})
 }
 
-func TestSPANotFoundNotFound(t *testing.T) {
+func TestClientSideRoutingNotFoundFavicon(t *testing.T) {
+	testService(t, TestCase{
+		Request: httptest.NewRequest(
+			http.MethodGet, "/favicon.ico",
+			nil,
+		),
+		ExpectedStatusCode: 404,
+		ExpectedBody:       "404 page not found\n",
+		ConfigFuncs: []poseidon.ConfigFunc{
+			poseidon.WithClientSideRouting(),
+		},
+		ExpectedHeaders: map[string]string{
+			"Cache-Control": "no-cache, must-revalidate",
+		},
+	})
+}
+
+func TestClientSideRoutingNotFoundNotFound(t *testing.T) {
 	testService(t, TestCase{
 		Request: httptest.NewRequest(
 			http.MethodGet, "/foobar/",
@@ -173,7 +197,7 @@ func TestSPANotFoundNotFound(t *testing.T) {
 		ExpectedStatusCode: 404,
 		ExpectedBody:       "404 page not found\n",
 		ConfigFuncs: []poseidon.ConfigFunc{
-			poseidon.WithSPA(),
+			poseidon.WithClientSideRouting(),
 			poseidon.WithCustomIndex("non-existing-index.html"),
 		},
 	})
@@ -246,6 +270,10 @@ func testService(t *testing.T, testCase TestCase) {
 	service, err := poseidon.New(os.DirFS("test_data"), testCase.ConfigFuncs...)
 	if err != nil {
 		t.Fatal(err)
+	}
+
+	for k, v := range testCase.RequestHeaders {
+		testCase.Request.Header.Add(k, v)
 	}
 
 	recorder := httptest.NewRecorder()

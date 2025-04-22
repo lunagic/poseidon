@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="{{ .Lang }}">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+		<title>{{ .Title }}</title>
+		<meta name="description" content="{{ .Description }}">
+		{{- range $css := .Assets.CSS }}
+		<link rel="preload" href="{{ $css }}" as="style" onload="this.onload=null;this.rel='stylesheet'" />
+		<noscript>
+			<link rel="stylesheet" href="{{ $css }}">
+		</noscript>
+		{{ end -}}
+		{{- .HeaderContent -}}
+	</head>
+	<body>
+		<noscript>
+			<div style="height: 100dvh;display: flex;align-items: center;justify-content: center;text-align: center;flex-direction: column;gap: 1rem;">
+				<p>
+					This site requires JavaScript.
+				</p>
+				<p>
+					Please enable JavaScript to continue.
+				</p>
+			</div>
+		</noscript>
+		<div id="app"></div>
+		{{- range $js := .Assets.JS }}
+		<script defer async src="{{ $js }}"></script>
+		{{- end }}
+	</body>
+</html>

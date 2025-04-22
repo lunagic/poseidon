@@ -2,6 +2,7 @@ package poseidon
 
 import (
 	"compress/gzip"
+	"html/template"
 	"io"
 	"io/fs"
 	"mime"
@@ -119,6 +120,21 @@ func WithClientSideRouting() ConfigFunc {
 			// Change the path to the index and retry
 			r.URL.Path = service.index
 			service.ServeHTTP(w, r)
+		}))(service)
+	}
+}
+
+func WithClientSideRoutingAndServerSideRendering(provider SSRProvider) ConfigFunc {
+	return func(service *Service) error {
+		indexTemplate, err := template.New("index").Parse(string(indexTemplateBytes))
+		if err != nil {
+			return err
+		}
+
+		return WithCustomNotFoundHandler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			if err := indexTemplate.Execute(w, provider.HandleRequest(r)); err != nil {
+				w.Write([]byte(err.Error()))
+			}
 		}))(service)
 	}
 }

@@ -1,1 +1,12 @@
-/.stencil/tmp/
+# System
+.DS_Store
+
+# Temporary Files
+/tmp/
+
+# Secrets
+.env.local
+.env.*.local
+
+# Go
+__debug_bin*

@@ -1,6 +1,6 @@
 module github.com/lunagic/poseidon
 
-go 1.23.1
+go 1.24
 
 require (
 	github.com/lunagic/environment-go v0.0.1

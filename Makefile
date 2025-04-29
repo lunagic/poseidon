@@ -1,4 +1,4 @@
-.PHONY: full clean lint lint-go fix fix-go test test-go build build-go watch docs-go
+.PHONY: full clean lint lint-go fix fix-go test test-go build build-go dev-go watch docs-go
 
 SHELL=/bin/bash -o pipefail
 $(shell git config core.hooksPath ops/git-hooks)
@@ -42,6 +42,9 @@ build-go:
 	go generate
 	go build -ldflags='-s -w' -o tmp/build/poseidon .
 	go install .
+
+dev-go:
+	go run .
 
 ## Watch the project
 watch:

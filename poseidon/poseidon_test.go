@@ -32,12 +32,12 @@ func TestMiddlewareOrder(t *testing.T) {
 		ConfigFuncs: []poseidon.ConfigFunc{
 			poseidon.WithMiddleware(func(next http.Handler) http.Handler {
 				return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-					w.Write([]byte("middleware1"))
+					_, _ = w.Write([]byte("middleware1"))
 				})
 			}),
 			poseidon.WithMiddleware(func(next http.Handler) http.Handler {
 				return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-					w.Write([]byte("middleware2"))
+					_, _ = w.Write([]byte("middleware2"))
 				})
 			}),
 		},
@@ -286,7 +286,7 @@ func testService(t *testing.T, testCase TestCase) {
 		t.Fatalf("Unexpected Status Code, Got: %d, Expected: %d", recorder.Code, testCase.ExpectedStatusCode)
 	}
 
-	var reader io.ReadCloser = recorder.Result().Body
+	reader := recorder.Result().Body
 
 	switch recorder.Header().Get("Content-Encoding") {
 	case "gzip":

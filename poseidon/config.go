@@ -33,7 +33,9 @@ func WithGZipCompression() ConfigFunc {
 
 			w.Header().Set("Content-Encoding", "gzip")
 			gzipWriter := gzip.NewWriter(w)
-			defer gzipWriter.Close()
+			defer func() {
+				_ = gzipWriter.Close()
+			}()
 			gzipResponseWriter := gzipResponseWriter{Writer: gzipWriter, ResponseWriter: w}
 
 			next.ServeHTTP(gzipResponseWriter, r)
@@ -100,7 +102,9 @@ func WithCustomNotFoundFile(filePath string) ConfigFunc {
 				http.NotFound(w, r)
 				return
 			}
-			defer file.Close()
+			defer func() {
+				_ = file.Close()
+			}()
 
 			doNotCache(w)
 			writeFile(w, file, http.StatusNotFound)
@@ -133,7 +137,7 @@ func WithClientSideRoutingAndServerSideRendering(provider SSRProvider) ConfigFun
 
 		return WithCustomNotFoundHandler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			if err := indexTemplate.Execute(w, provider.HandleRequest(r)); err != nil {
-				w.Write([]byte(err.Error()))
+				_, _ = w.Write([]byte(err.Error()))
 			}
 		}))(service)
 	}
@@ -155,6 +159,6 @@ func writeFile(w http.ResponseWriter, file fs.File, status int) {
 	stat, _ := file.Stat()
 	w.Header().Set("content-type", mime.TypeByExtension(filepath.Ext(stat.Name())))
 	w.WriteHeader(status)
-	io.Copy(w, file)
-	file.Close()
+	_, _ = io.Copy(w, file)
+	_ = file.Close()
 }

@@ -15,8 +15,9 @@ clean:
 lint: lint-go
 
 lint-go:
+	@go install github.com/golangci/golangci-lint/v2/cmd/golangci-lint@v2.1.5
 	go mod tidy
-	go tool golangci-lint run ./...
+	golangci-lint run ./...
 
 ## Fix the project
 fix: fix-go

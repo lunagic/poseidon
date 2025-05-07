@@ -1,6 +1,8 @@
 # poseidon
 
-Static File Server
+[![Validate](https://github.com/lunagic/poseidon/actions/workflows/validate.yml/badge.svg)](https://github.com/lunagic/poseidon/actions/workflows/validate.yml)
+[![Go Reference](https://pkg.go.dev/badge/github.com/lunagic/poseidon.svg)](https://pkg.go.dev/github.com/lunagic/poseidon)
+[![Go Report Card](https://goreportcard.com/badge/github.com/lunagic/poseidon)](https://goreportcard.com/report/github.com/lunagic/poseidon)
 
 ## Installation
 

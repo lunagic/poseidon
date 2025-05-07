@@ -30,11 +30,12 @@ fix-go:
 test: test-go
 
 test-go:
+	@go install github.com/boumenot/gocover-cobertura@latest
 	@mkdir -p tmp/coverage/go/
 	go test -cover -coverprofile tmp/coverage/go/profile.txt ./...
 	@go tool cover -func tmp/coverage/go/profile.txt | awk '/^total/{print $$1 " " $$3}'
 	@go tool cover -html tmp/coverage/go/profile.txt -o tmp/coverage/go/coverage.html
-	@go tool gocover-cobertura < tmp/coverage/go/profile.txt > tmp/coverage/go/cobertura-coverage.xml
+	@gocover-cobertura < tmp/coverage/go/profile.txt > tmp/coverage/go/cobertura-coverage.xml
 
 ## Build the project
 build: build-go
@@ -52,5 +53,6 @@ watch:
 
 ## Run the docs server for the project
 docs-go:
+	@go install golang.org/x/tools/cmd/godoc@latest
 	@echo "listening on http://127.0.0.1:6060/pkg/github.com/lunagic/poseidon"
-	@go tool godoc -http=127.0.0.1:6060
+	@godoc -http=127.0.0.1:6060

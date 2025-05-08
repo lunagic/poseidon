@@ -46,7 +46,7 @@ build-go:
 	go install .
 
 dev-go:
-	go run .
+	go run . | jq
 
 ## Watch the project
 watch:

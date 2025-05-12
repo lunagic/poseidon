@@ -7,9 +7,9 @@
 		<title>{{ .Title }}</title>
 		<meta name="description" content="{{ .Description }}">
 		{{- range $css := .Assets.CSS }}
-		<link rel="preload" href="{{ $css }}" as="style" onload="this.onload=null;this.rel='stylesheet'" />
+		<link rel="preload" href="/{{ $css }}" as="style" onload="this.onload=null;this.rel='stylesheet'" />
 		<noscript>
-			<link rel="stylesheet" href="{{ $css }}">
+			<link rel="stylesheet" href="/{{ $css }}">
 		</noscript>
 		{{ end -}}
 		{{- .HeaderContent -}}
@@ -27,7 +27,7 @@
 		</noscript>
 		<div id="app"></div>
 		{{- range $js := .Assets.JS }}
-		<script defer async src="{{ $js }}"></script>
+		<script defer async src="/{{ $js }}"></script>
 		{{- end }}
 	</body>
 </html>

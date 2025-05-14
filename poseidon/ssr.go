@@ -24,6 +24,7 @@ type SSRPayload struct {
 	Lang          string
 	Title         string
 	Description   string
+	HTMLClass     string
 	Assets        SSRAssets
 	HeaderContent template.HTML
 }

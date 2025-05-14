@@ -128,18 +128,26 @@ func WithClientSideRouting() ConfigFunc {
 	}
 }
 
-func WithClientSideRoutingAndServerSideRendering(provider SSRProvider) ConfigFunc {
+func WithClientSideRoutingAndServerSideRendering(provider SSRProvider, middleware ...Middleware) ConfigFunc {
 	return func(service *Service) error {
 		indexTemplate, err := template.New("index").Parse(string(indexTemplateBytes))
 		if err != nil {
 			return err
 		}
 
-		return WithCustomNotFoundHandler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-			if err := indexTemplate.Execute(w, provider.HandleRequest(r)); err != nil {
-				_, _ = w.Write([]byte(err.Error()))
-			}
-		}))(service)
+		middlewares := append(Middlewares{}, middleware...)
+
+		return WithCustomNotFoundHandler(
+			middlewares.Apply(
+				http.HandlerFunc(
+					func(w http.ResponseWriter, r *http.Request) {
+						if err := indexTemplate.Execute(w, provider.HandleRequest(r)); err != nil {
+							_, _ = w.Write([]byte(err.Error()))
+						}
+					},
+				),
+			),
+		)(service)
 	}
 }
 

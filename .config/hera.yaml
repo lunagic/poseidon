@@ -1,0 +1,11 @@
+services:
+  backend:
+    command: make dev-go
+    watch:
+      - .env
+      - .env.local
+      - Makefile
+      - go.mod
+      - go.sum
+      - main.go
+    exclude: []

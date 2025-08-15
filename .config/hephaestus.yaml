@@ -1,0 +1,2 @@
+docker_image: ghcr.io/lunagic/poseidon
+default_port: 3000

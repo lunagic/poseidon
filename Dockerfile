@@ -1,12 +1,14 @@
-FROM golang:1.23-alpine AS builder
+FROM golang:1.24-alpine AS backend_builder
+RUN apk add --no-cache git gcc g++
 WORKDIR /workspace
 COPY . .
-RUN go build -ldflags='-s -w' -o build .
+RUN git clean -Xdff
+RUN CGO_ENABLED=1 go build -ldflags='-s -w' -o /usr/local/bin/build .
 
-FROM debian:latest
-COPY --from=builder /workspace/build /usr/local/bin/poseidon
-WORKDIR /var/www/html
-CMD [ "poseidon" ]
+FROM alpine:latest
+WORKDIR /workspace
+COPY --from=backend_builder /usr/local/bin/build /usr/local/bin/build
+CMD [ "build" ]
 ENV HOST=0.0.0.0
 ENV PORT=3000
 EXPOSE 3000

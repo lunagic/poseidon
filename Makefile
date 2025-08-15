@@ -1,4 +1,4 @@
-.PHONY: full clean lint lint-go fix fix-go test test-go build build-go dev-go watch docs-go
+.PHONY: full clean lint lint-go fix fix-go test test-go build build-go dev-go watch watch-go docker-build docker-test docs-go
 
 SHELL=/bin/bash -o pipefail
 $(shell git config core.hooksPath ops/git-hooks)
@@ -50,6 +50,16 @@ dev-go:
 
 ## Watch the project
 watch:
+	hera
+
+watch-go:
+	hera backend
+
+docker-build:
+	docker build -t 'ghcr.io/lunagic/poseidon:latest' .
+
+docker-test: docker-build
+	docker run --rm -it -p 3000:3000/tcp ghcr.io/lunagic/poseidon:latest
 
 ## Run the docs server for the project
 docs-go:
